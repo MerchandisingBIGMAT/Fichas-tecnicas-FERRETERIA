@@ -187,6 +187,7 @@ const ln8=v=>{v=String(v==null?'':v).trim();return v?v.padStart(8,'0'):''};
 const getLogo=r=>find(logos,r.LOGO||r.MARCA)||find(imgs,r.LOGO||r.MARCA);
 const getPicto=r=>find(logos,r.PICTO)||find(imgs,r.PICTO);
 const getImg=r=>imgs8[ln8(r.CODIGO_LN)]||find(imgs,r.IMAGEN)||find(imgs,r.CODIGO_LN)||find(imgs,ln8(r.CODIGO_LN));
+const cap=s=>{s=String(s==null?'':s).trim();return s.replace(/^\p{L}/u,c=>c.toLocaleUpperCase('es'))};
 function pick(r,names){for(const n of names){if(r[n]!==undefined&&String(r[n]).trim()!=='')return r[n]}return ''}
 function find(map,v){if(!v)return null;return map[key(v)]||map[stem(v)]||null}
 
@@ -196,7 +197,7 @@ function pageHTML(r,i){
  const img=getImg(r),lg=getLogo(r),pc=getPicto(r);
  let t='';
  for(let k=1;k<=5;k++){
-  t+=`<div class="tr"><div class="td n fit" data-max="9" data-min="4.5">${esc(pick(r,['NOMBRE_CARACTERISTICA_'+k,'NOMBRE_CARACT_'+k]))}</div><div class="td v fit" data-max="9" data-min="4.5">${esc(pick(r,['CARACTERISTICA_'+k,'CARACT_'+k]))}</div></div>`;
+  t+=`<div class="tr"><div class="td n fit" data-max="9" data-min="4.5">${esc(cap(pick(r,['NOMBRE_CARACTERISTICA_'+k,'NOMBRE_CARACT_'+k])))}</div><div class="td v fit" data-max="9" data-min="4.5">${esc(cap(pick(r,['CARACTERISTICA_'+k,'CARACT_'+k])))}</div></div>`;
  }
  return `<div class="wrap"><div class="page"><div class="sc">
   <div class="hd"></div>
@@ -205,8 +206,8 @@ function pageHTML(r,i){
   <div class="logo fit" data-max="9" data-min="5">${lg?`<img src="${lg}" alt="">`:esc(r.MARCA)}</div>
   <div class="img">${img?`<img class="prod" data-i="${i}" data-o="${img}" src="${img}" alt="">`:(r.IMAGEN?'Sin imagen: '+esc(r.IMAGEN):'Sin imagen')}${pc?`<div class="pic"><img src="${pc}" alt=""></div>`:''}</div>
   <div class="tab">${t}</div>
-  <div class="inc"><div class="lab">Incluye:</div><div class="txt fit" data-max="8" data-min="4">${String(r.INCLUYE||'').split(/\r?\n|;|\|/).map(x=>x.trim()).filter(Boolean).map(x=>'<div class="dl">- '+esc(x)+'</div>').join('')}</div></div>
-  <div class="add"><div class="lab">Añade y mejora tu compra</div><div class="txt fit" data-max="8" data-min="4">${String(r.ANADE||'').split(/\r?\n|;|\|/).map(x=>x.trim()).filter(Boolean).map(x=>'<div class="dl">- '+esc(x)+'</div>').join('')}</div></div>
+  <div class="inc"><div class="lab">Incluye:</div><div class="txt fit" data-max="8" data-min="4">${String(r.INCLUYE||'').split(/\r?\n|;|\|/).map(x=>x.trim()).filter(Boolean).map(x=>'<div class="dl">- '+esc(cap(x))+'</div>').join('')}</div></div>
+  <div class="add"><div class="lab">Añade y mejora tu compra</div><div class="txt fit" data-max="8" data-min="4">${String(r.ANADE||'').split(/\r?\n|;|\|/).map(x=>x.trim()).filter(Boolean).map(x=>'<div class="dl">- '+esc(cap(x))+'</div>').join('')}</div></div>
   <div class="grp"><div class="ase"><img src="${ASE}" alt=""></div><div class="ref fit" data-max="11" data-min="6">Ref. ${esc(ln8(r.CODIGO_LN))}</div></div>
   <div class="ft"></div><div class="ft2"></div>
   <img class="bm" src="${BM}" alt="">
