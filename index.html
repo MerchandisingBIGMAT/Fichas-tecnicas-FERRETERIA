@@ -74,7 +74,7 @@ input[type=range]{accent-color:var(--blue)}
 .img{left:3.6mm;top:23.1mm;width:46.8mm;height:51.8mm;border:.3mm solid #e1e2f1;display:flex;align-items:center;justify-content:center;padding:2mm;color:#b6bccb;font-size:5pt}
 .pic{position:absolute;left:1.2mm;bottom:1.2mm;width:11mm;height:11mm}
 .pic img{width:100%;height:100%;object-fit:contain;object-position:left bottom}
-.ref{flex:none;width:38mm;height:14mm;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;color:#4b5563;overflow:hidden}
+.ref{width:100%;height:100%;padding:0 1mm;display:flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap;font-weight:700;color:#4b5563;overflow:hidden}
 .tab{left:52.4mm;top:23.1mm;width:49.1mm;height:51.8mm;border-top:.8mm solid #0f498b;border-bottom:.8mm solid #0f498b;display:flex;flex-direction:column}
 .tr{flex:1;display:flex;min-height:0}
 .tr:nth-child(odd){background:#e6e5e6}
@@ -92,7 +92,9 @@ input[type=range]{accent-color:var(--blue)}
 .inc .txt,.add .txt{flex-direction:column;justify-content:flex-start}
 .dl{padding-left:1.1mm;text-indent:-1.1mm}
 .ase{flex:none;width:calc(35mm/var(--k,1));height:calc(35mm/var(--k,1));border:calc(.3mm/var(--k,1)) solid #e1e2f1;display:flex;align-items:center;justify-content:center;padding:calc(2mm/var(--k,1))}
-.grp{left:3.4mm;right:3.5mm;top:calc(100.8mm + 10mm*(var(--k,1) - 1));height:calc(40.2mm - 10mm*(var(--k,1) - 1));display:flex;align-items:center;justify-content:center;gap:12mm}
+.grp{left:0;right:0;top:calc(100.8mm + 10mm*(var(--k,1) - 1));height:calc(40.2mm - 10mm*(var(--k,1) - 1))}
+.grp>.ase{position:absolute;top:50%;transform:translateY(-50%);left:calc(26.9mm - 17.5mm/var(--k,1))}
+.rect{position:absolute;top:50%;transform:translateY(-50%);left:calc(77mm - 30mm/var(--k,1));width:calc(60mm/var(--k,1));height:calc(35mm/var(--k,1));border:calc(.35mm/var(--k,1)) dashed #cfd4dc}
 .ft{left:0;width:82mm;top:141mm;height:4.6mm;background:#0f498b}
 .ft2{left:99.2mm;right:0;top:141mm;height:4.6mm;background:#0f498b}
 .bm{left:83.2mm;top:140.7mm;width:14.1mm;height:5.55mm}
@@ -109,9 +111,12 @@ input[type=range]{accent-color:var(--blue)}
  body[data-print=all] .wrap{display:block}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
-.cut{position:absolute;top:calc(1.2mm + .6mm*var(--k,1));left:calc(1.2mm + .6mm*var(--k,1));right:calc(1.2mm + .6mm*var(--k,1));bottom:calc(1.2mm + .6mm*var(--k,1));border:.35mm dashed #cfd4dc;pointer-events:none}
-:root[data-fmt="A6"] .grp{justify-content:flex-start;gap:2mm}
-:root[data-fmt="A6"] .ref{flex:1;width:auto}
+.cl{position:absolute;pointer-events:none;margin:0}
+.cl.h{left:0;right:0;height:0;border-top:.35mm dashed #cfd4dc}
+.cl.v{top:0;bottom:0;width:0;border-left:.35mm dashed #cfd4dc}
+.cl.t{top:calc(1.2mm + .6mm*var(--k,1))}.cl.b{bottom:calc(1.2mm + .6mm*var(--k,1))}.cl.l{left:calc(1.2mm + .6mm*var(--k,1))}.cl.r{right:calc(1.2mm + .6mm*var(--k,1))}
+:root[data-fmt="A6"] .grp>.ase{left:3.4mm}
+:root[data-fmt="A6"] .rect{left:41.5mm}
 :root[data-fmt="A5"] .inc,:root[data-fmt="A5"] .add{height:25.5mm}
 :root[data-fmt="A5"] .grp{top:102.3mm;height:38.7mm}
 :root[data-fmt="A6"] .inc,:root[data-fmt="A6"] .add{height:21mm}
@@ -208,10 +213,10 @@ function pageHTML(r,i){
   <div class="tab">${t}</div>
   <div class="inc"><div class="lab">Incluye:</div><div class="txt fit" data-max="8" data-min="4">${String(r.INCLUYE||'').split(/\r?\n|;|\|/).map(x=>x.trim()).filter(Boolean).map(x=>'<div class="dl">- '+esc(cap(x))+'</div>').join('')}</div></div>
   <div class="add"><div class="lab">Añade y mejora tu compra</div><div class="txt fit" data-max="8" data-min="4">${String(r.ANADE||'').split(/\r?\n|;|\|/).map(x=>x.trim()).filter(Boolean).map(x=>'<div class="dl">- '+esc(cap(x))+'</div>').join('')}</div></div>
-  <div class="grp"><div class="ase"><img src="${ASE}" alt=""></div><div class="ref fit" data-max="11" data-min="6">Ref. ${esc(ln8(r.CODIGO_LN))}</div></div>
+  <div class="grp"><div class="ase"><img src="${ASE}" alt=""></div><div class="rect"><div class="ref fit" data-max="13" data-min="6">Ref. ${esc(ln8(r.CODIGO_LN))}</div></div></div>
   <div class="ft"></div><div class="ft2"></div>
   <img class="bm" src="${BM}" alt="">
- </div><div class="cut"></div></div></div>`;
+ </div><i class="cl h t"></i><i class="cl h b"></i><i class="cl v l"></i><i class="cl v r"></i></div></div>`;
 }
 
 function fit(){
