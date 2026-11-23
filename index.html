@@ -167,11 +167,11 @@ body.measure .wrap{display:block!important;position:absolute;left:-9999px}
      <span class="status" id="cnt"></span>
     </div>
     <div class="row">
-     <label>Tamaño de papel <select id="fmt"><option value="A4">DIN A4 (210 × 297 mm)</option><option value="A5" selected>DIN A5 (148 × 210 mm)</option><option value="A6">DIN A6 (105 × 148 mm)</option></select></label>
+     <label>Tamaño de ficha <select id="fmt"><option value="A4">DIN A4 (210 × 297 mm)</option><option value="A5" selected>DIN A5 (148 × 210 mm)</option><option value="A6">DIN A6 (105 × 148 mm)</option></select></label>
      <button id="dOne" disabled>Descargar PDF de esta ficha</button>
      <button id="dAll" disabled>Descargar PDF de todas</button>
     </div>
-    <div class="status">El PDF se genera con el tamaño de papel elegido y una ficha por página.</div>
+    <div class="status">El PDF sale en hoja A4 con la ficha centrada y líneas de corte hasta los bordes del papel. Una ficha por hoja.</div>
    </div>
    <div class="stage" id="stage"><div class="status" style="padding:40px">Carga un Excel para ver la vista previa.</div></div>
   </main>
@@ -484,15 +484,21 @@ async function makePdf(all){
  document.body.appendChild(host);
  try{
   await isolate();
-  const doc=new J({unit:'mm',format:[w,h],orientation:'portrait',compress:true});
+  const PW=210,PH=297,x0=(PW-w)/2,y0=(PH-h)/2;
+  const kk=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--k'))||1,ins=1.2+.6*kk;
+  const doc=new J({unit:'mm',format:'a4',orientation:'portrait',compress:true});
   for(let n=0;n<idx.length;n++){
    $('status').textContent='Generando PDF… '+(n+1)+' / '+idx.length;
-   const c=pages[idx[n]].cloneNode(true);c.style.transform='none';c.style.boxShadow='none';
+   const c=pages[idx[n]].cloneNode(true);c.style.transform='none';c.style.boxShadow='none';c.querySelectorAll('.cl').forEach(e=>e.remove());
    host.innerHTML='';host.appendChild(c);
    await new Promise(r=>setTimeout(r,30));
    const cv=await html2canvas(c,{scale:sc,backgroundColor:'#ffffff',useCORS:true,logging:false});
-   if(n)doc.addPage([w,h],'portrait');
-   doc.addImage(cv.toDataURL('image/jpeg',.92),'JPEG',0,0,w,h,undefined,'FAST');
+   if(n)doc.addPage('a4','portrait');
+   doc.addImage(cv.toDataURL('image/jpeg',.92),'JPEG',x0,y0,w,h,undefined,'FAST');
+   doc.setDrawColor(207,212,220);doc.setLineWidth(.35);doc.setLineDashPattern([1,1],0);
+   doc.line(0,y0+ins,PW,y0+ins);doc.line(0,y0+h-ins,PW,y0+h-ins);
+   doc.line(x0+ins,0,x0+ins,PH);doc.line(x0+w-ins,0,x0+w-ins,PH);
+   doc.setLineDashPattern([],0);
   }
   const blob=doc.output('blob');
   const fname='fichas_'+f+(all?'':'_'+(ln8(rows[cur].CODIGO_LN)||'ficha'))+'.pdf';
@@ -500,7 +506,7 @@ async function makePdf(all){
   try{dl=window.claude&&claude.use?await claude.use('downloads'):null}catch(e){dl=null}
   if(dl){await dl.save({filename:fname,data:blob})}
   else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
-  $('status').textContent='PDF '+f+' generado ('+idx.length+(idx.length===1?' ficha':' fichas')+').';
+  $('status').textContent='PDF A4 generado, ficha '+f+' ('+idx.length+(idx.length===1?' ficha':' fichas')+').';
  }catch(err){
   if(err&&err.code==='declined')updStatus();
   else $('status').innerHTML='<span class="warn">No se pudo generar el PDF'+(err&&err.message?': '+esc(err.message):'')+'</span>';
