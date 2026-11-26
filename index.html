@@ -84,10 +84,10 @@ input[type=range]{accent-color:var(--blue)}
 .td.v{width:47.3%;padding:0 1mm 0 1.5mm}
 .inc,.add{top:76.8mm;height:calc(24mm + 10mm*(var(--k,1) - 1));display:flex;flex-direction:column}
 .inc{left:3.4mm;width:47mm;border:.25mm solid #0f498b}
-.add{left:52.5mm;width:49mm;border:.25mm solid #e41e25}
+.add{left:52.5mm;width:49mm;border:.25mm solid #0f498b}
 .lab{margin:1.9mm 0 0 -.25mm;align-self:flex-start;display:flex;align-items:center;color:#fff;font-weight:700;font-size:5.6pt;padding:.5mm 2mm .5mm 1.8mm;line-height:1.25;white-space:nowrap}
 .inc .lab{background:#0f498b}
-.add .lab{background:#e41e25}
+.add .lab{background:#0f498b}
 .txt{flex:1;min-height:0;margin:1.2mm 2.4mm 1mm;overflow:hidden;display:flex;align-items:flex-start;white-space:pre-line;line-height:1.25}
 .txt>div{width:100%}
 .inc .txt,.add .txt{flex-direction:column;justify-content:flex-start}
@@ -170,10 +170,9 @@ body.measure .wrap{display:block!important;position:absolute;left:-9999px}
     <div class="row">
      <label>Tamaño de ficha <select id="fmt"><option value="A4">DIN A4 (210 × 297 mm)</option><option value="A5" selected>DIN A5 (148 × 210 mm)</option><option value="A6">DIN A6 (105 × 148 mm)</option></select></label>
      <button id="dOne" disabled>Descargar PDF de esta ficha</button>
-     <button id="dAll" disabled>Descargar PDF de todas</button>
      <button id="dEach" disabled title="Genera un PDF por cada ficha, con el Código LN como nombre de archivo">Descargar un PDF por ficha</button>
     </div>
-    <div class="status">El PDF sale en hoja A4 con la ficha centrada y líneas de corte hasta los bordes del papel. Una ficha por hoja. «Un PDF por ficha» crea un archivo por producto, con su Código LN como nombre.</div>
+    <div class="status">El PDF sale en hoja A4 con la ficha centrada y líneas de corte hasta los bordes del papel. «Un PDF por ficha» crea un archivo por producto, con su Código LN como nombre.</div>
    </div>
    <div class="stage" id="stage"><div class="status" style="padding:40px">Carga un Excel para ver la vista previa.</div></div>
   </main>
@@ -374,7 +373,7 @@ function render(){
  st.innerHTML=rows.map(pageHTML).join('');
  const sel=$('sel');
  sel.innerHTML=rows.map((r,i)=>`<option value="${i}">${i+1}. ${esc(ln8(r.CODIGO_LN)||'—')} · ${esc(r.MODELO||'')}</option>`).join('');
- ['sel','prev','next','dOne','dAll','dEach','rotL','rotR'].forEach(i=>$(i).disabled=false);
+ ['sel','prev','next','dOne','dEach','rotL','rotR'].forEach(i=>$(i).disabled=false);
  if(cur>=rows.length)cur=0;
  show(cur);
  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(fit);
@@ -489,7 +488,7 @@ async function addFicha(doc,el,host,first){
  doc.setLineDashPattern([],0);
 }
 const mkHost=()=>{const host=document.createElement('div');host.style.cssText='position:fixed;left:-10000px;top:0;width:calc(105mm*var(--k,1));height:calc(148mm*var(--k,1))';document.body.appendChild(host);return host};
-const BTNS=['dOne','dAll','dEach'];
+const BTNS=['dOne','dEach'];
 function saveAnchor(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 async function getDl(){try{return window.claude&&claude.use?await claude.use('downloads'):null}catch(e){return null}}
 async function makePdf(all){
@@ -553,7 +552,6 @@ async function makeEach(){
  }finally{host.remove();btns.forEach(b=>b.disabled=false)}
 }
 $('dOne').onclick=()=>makePdf(false);
-$('dAll').onclick=()=>makePdf(true);
 $('dEach').onclick=()=>makeEach();
 $('btnImp').onclick=()=>$('fx').click();
 $('btnImg').onclick=()=>$('fi').click();
